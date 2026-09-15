@@ -146,3 +146,68 @@ RISK_PATTERNS = [
         "text": "This solves a one-time crisis or event; customers have no natural reason to buy upsells or cross-family products.",
     },
 ]
+
+# ----------------------------------------------------------------------
+# Demand Radar: rule-based intent + product-type classification.
+# No API calls — pure keyword/regex pattern matching against the query text.
+# ----------------------------------------------------------------------
+
+# Ordered from most to least specific "buying signal". A query is scored at
+# the HIGHEST level whose pattern it matches.
+INTENT_LEVELS = {
+    3: {  # Product-aware — they are naming the exact product/format they want
+        "label": "Product-aware",
+        "emoji": "🔴",
+        "patterns": [
+            r"\btemplate(s)?\b", r"\bprintable(s)?\b", r"\bspreadsheet\b",
+            r"\bworkbook\b", r"\bplanner\b", r"\btracker\b", r"\bcalculator\b",
+            r"\bcheat\s?sheet\b", r"\bcheckl?ist\b", r"\bpdf\b", r"\bexcel\b",
+            r"\bgoogle sheets?\b", r"\bnotion\b", r"\bcanva\b", r"\bpowerpoint\b",
+            r"\bworksheet\b", r"\bform\b", r"\bkit\b", r"\bbundle\b",
+        ],
+    },
+    2: {  # Problem-aware — describing a concrete situation/need, not yet the format
+        "label": "Problem-aware",
+        "emoji": "🟡",
+        "patterns": [
+            r"\bhow to (track|manage|organize|plan|budget|calculate)\b",
+            r"\bfor small business\b", r"\bfor freelancers?\b", r"\bfor couples\b",
+            r"\bfor new parents\b", r"\bbest way to\b", r"\bsystem for\b",
+            r"\bmanage my\b", r"\borganize my\b", r"\bkeep track of\b",
+        ],
+    },
+    1: {  # Informational — general research, no clear purchase intent yet
+        "label": "Informational",
+        "emoji": "🟢",
+        "patterns": [
+            r"\bwhat is\b", r"\bwhy (do|does|is)\b", r"\bmeaning\b",
+            r"\bdefinition\b", r"\bexplained\b", r"\bhow does\b",
+        ],
+    },
+}
+
+# Product type detection — first matching keyword wins.
+PRODUCT_TYPE_PATTERNS = [
+    ("Excel", r"\bexcel\b|\bxlsx?\b|\bspreadsheet\b"),
+    ("Google Sheets", r"\bgoogle sheets?\b"),
+    ("Word", r"\bword\b|\bdocx?\b"),
+    ("PDF", r"\bpdf\b|\bfillable\b"),
+    ("Notion", r"\bnotion\b"),
+    ("Canva", r"\bcanva\b"),
+    ("PowerPoint", r"\bpowerpoint\b|\bpptx?\b|\bslides?\b"),
+    ("Printable", r"\bprintable(s)?\b"),
+    ("Planner", r"\bplanner\b"),
+    ("Tracker", r"\btracker\b"),
+    ("Calculator", r"\bcalculator\b"),
+    ("Checklist", r"\bcheckl?ist\b"),
+    ("Workbook", r"\bworkbook\b"),
+    ("Template (unspecified)", r"\btemplate(s)?\b"),
+]
+
+# Buckets for the final recommended action, keyed to an opportunity score 0-100.
+ACTION_BUCKETS = [
+    (78, "🟢 BUILD NOW"),
+    (68, "🟢 TEST"),
+    (55, "🟡 INVESTIGATE"),
+    (0, "🔴 TOO COMPETITIVE / LOW INTENT"),
+]
