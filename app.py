@@ -15,7 +15,16 @@ from research import (
     calculate_opportunity_score,
     calculate_evidence_confidence,
 )
-from db import init_db, save_opportunity, load_opportunities
+from db import (
+    init_db,
+    save_opportunity,
+    load_opportunities,
+    save_radar_entries,
+    load_radar_entries,
+    list_radar_months,
+)
+from radar import score_batch
+from trends import pytrends_available, get_trend_scores_batch
 
 st.set_page_config(page_title="Etsy Opportunity Radar", page_icon="🎯", layout="wide")
 
@@ -28,6 +37,100 @@ idea = st.session_state.idea
 
 st.title("🎯 Etsy Opportunity Radar")
 st.caption("Discover unusual human observations and validate commercial opportunities.")
+
+page = st.sidebar.radio("View", ["Idea Generator", "📡 Demand Radar"])
+
+if page == "📡 Demand Radar":
+    st.header("📡 Digital Product Demand Radar")
+    st.caption(
+        "Paste search queries you've collected (from Etsy autocomplete, Reddit threads, "
+        "Pinterest, your own brainstorming, etc.) — one per line. This classifies buyer "
+        "intent and product type for free using pattern matching. Google Trends scoring is "
+        "best-effort and may show N/A if Google blocks the request from this host; there is "
+        "no free source for guaranteed real-time search volume."
+    )
+
+    if not pytrends_available():
+        st.info("pytrends isn't installed — add `pytrends` to requirements.txt to enable best-effort trend scoring. The app works fine without it; trend scores will just show N/A.")
+
+    raw_queries = st.text_area(
+        "Paste queries (one per line)",
+        height=150,
+        placeholder="small business cash flow template\nwedding budget spreadsheet\nhow to track employee attendance",
+    )
+
+    fetch_trends = st.checkbox(
+        "Try to fetch Google Trends scores (best-effort, may be blocked on this host)",
+        value=False,
+    )
+
+    if st.button("🔍 Classify & Score", type="primary"):
+        queries = [q for q in raw_queries.splitlines() if q.strip()]
+        if not queries:
+            st.warning("Paste at least one query first.")
+        else:
+            trend_lookup = {}
+            if fetch_trends:
+                with st.spinner("Trying Google Trends (best-effort)..."):
+                    trend_lookup = get_trend_scores_batch(queries)
+            st.session_state.radar_batch = score_batch(queries, trend_lookup=trend_lookup)
+
+    if st.session_state.get("radar_batch"):
+        batch = st.session_state.radar_batch
+        df = pd.DataFrame(
+            [
+                {
+                    "Query": e["query"],
+                    "Intent": f"{e['intent_emoji']} {e['intent_label']}",
+                    "Product Type": e["product_type"],
+                    "Trend": "N/A" if e["trend_score"] is None else e["trend_score"],
+                    "Score": e["score"],
+                    "Action": e["action"],
+                }
+                for e in batch
+            ]
+        )
+        st.dataframe(df, use_container_width=True)
+        st.caption(
+            "Scores here only use intent classification + trend data (if fetched). "
+            "Add real Etsy listing counts, prices, and review data per-idea in the "
+            "Idea Generator tab for a fuller opportunity score."
+        )
+
+        if st.button("💾 Save this batch to the monthly database"):
+            save_radar_entries(batch)
+            st.toast(f"Saved {len(batch)} entries to the {batch[0]['month_tag']} archive.")
+
+    st.divider()
+    st.subheader("📚 Monthly Archive")
+    months = list_radar_months()
+    if months:
+        selected_month = st.selectbox("Month", ["All"] + months)
+        entries = load_radar_entries(None if selected_month == "All" else selected_month)
+        archive_df = pd.DataFrame(
+            [
+                {
+                    "Month": e["month_tag"],
+                    "Query": e["query"],
+                    "Intent": f"{e['intent_emoji']} {e['intent_label']}",
+                    "Product Type": e["product_type"],
+                    "Score": e["score"],
+                    "Action": e["action"],
+                }
+                for e in entries
+            ]
+        )
+        st.dataframe(archive_df, use_container_width=True)
+        st.download_button(
+            "⬇️ Export archive CSV",
+            archive_df.to_csv(index=False),
+            f"demand_radar_{selected_month}.csv",
+            "text/csv",
+        )
+    else:
+        st.info("No saved entries yet — classify a batch above and save it to start your archive.")
+
+    st.stop()
 
 # ----------------------------
 # Sidebar Controls
