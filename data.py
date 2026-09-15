@@ -1,5 +1,6 @@
 """
-data.py — Expanded Niche, buyer, format libraries, weird reframes, and failure risk models.
+data.py — Niche, buyer, format libraries, weird reframes, and failure risk models.
+No API keys or network calls are used anywhere in this file.
 """
 
 PROBLEMS = [
@@ -39,7 +40,7 @@ PROBLEMS = [
     ("project abandonment", "starting dozens of ambitious side projects but finishing none"),
     ("skill-gap anxiety", "feeling underqualified for new roles or tools and lacking a structured study system"),
     ("solopreneur operational fatigue", "single-person businesses drowning in manual client onboarding and admin"),
-    ("habit decay", "starting strong with new habits but dropping them as soon as routine changes")
+    ("habit decay", "starting strong with new habits but dropping them as soon as routine changes"),
 ]
 
 BUYERS = [
@@ -53,45 +54,34 @@ BUYERS = [
     ("people approaching 50", "feel increasing urgency around time allocation, health, and mid-life legacy"),
     ("retirees & pre-retirees", "face a large block of newly unstructured time and loss of workplace identity"),
     ("caregivers of elderly relatives", "need simple coordination, medical tracking, and legal info systems"),
-
-    # Career & Ambition
     ("busy corporate professionals", "have high disposable income, limited time, and pay for extreme convenience"),
     ("freelancers & agency owners", "need lightweight client management, proposal, and invoicing workflows"),
     ("etsy & digital product sellers", "looking for business trackers, listing templates, and SEO tools"),
     ("content creators & podcasters", "need editorial calendars, content repurposing pipelines, and brand kit hubs"),
     ("grad students & researchers", "struggling with citation tracking, thesis planning, and deep work scheduling"),
-
-    # Lifestyle & Mindset
     ("self-improvement enthusiasts", "already actively buy journals, planners, habit trackers, and reflection tools"),
     ("minimalists & declutterers", "want lightweight, digital-only systems that reduce physical inventory"),
     ("people moving abroad / expats", "face major legal, financial, administrative, and identity transitions"),
     ("neurodivergent adults (ADHD/Autism)", "need low-friction, visual, dopamine-friendly task systems"),
-    ("budgeters & debt-free seekers", "obsessed with zero-based budgeting, payoff trackers, and financial visualizers")
+    ("budgeters & debt-free seekers", "obsessed with zero-based budgeting, payoff trackers, and financial visualizers"),
+    ("small business owners", "need lightweight systems for recurring operational problems"),
 ]
 
+# Formats limited to outputs Claude (or any standard Python/Streamlit stack) can
+# actually generate as files: spreadsheets, HTML/JS tools, PDFs, Markdown, SVG.
 FORMATS = [
-    # Interactive & Automated Spreadsheets (High Value)
-    ("interactive Google Sheets dashboard", 1.40),
-    ("automated Excel budget & forecast tool", 1.35),
-    ("smart dynamic tracking system", 1.30),
-    ("visual habit & goal analytics spreadsheet", 1.25),
-
-    # Notion & Workspace Systems
-    ("Notion All-in-One Life Operating System", 1.35),
-    ("Notion Client & Project Hub", 1.30),
-    ("Notion Minimalist Second Brain Workspace", 1.25),
-
-    # Digital & Printable Workbooks/Journals
-    ("interactive iPad / GoodNotes digital planner", 1.20),
+    ("interactive spreadsheet (Excel/Google Sheets)", 1.30),
+    ("automated budget & forecast spreadsheet", 1.35),
+    ("visual habit & goal tracking spreadsheet", 1.25),
     ("fillable PDF decision workbook", 1.15),
-    ("guided reflection journal (Printable & Digital)", 1.00),
-    ("family conversation & card kit", 1.25),
-
-    # Administrative & SOP Bundles
-    ("complete operational SOP template suite", 1.20),
-    ("emergency binder & document Vault PDF kit", 1.25),
-    ("plug-and-play Canva graphics & doc bundle", 1.10),
-    ("step-by-step checklist & audit system", 1.05)
+    ("guided reflection journal (printable + digital)", 1.00),
+    ("family conversation & card kit (printable)", 1.25),
+    ("printable checklist & audit system", 1.05),
+    ("printable dashboard / wall planner", 1.05),
+    ("standalone HTML/JS interactive tool", 1.30),
+    ("single-page HTML calculator widget", 1.20),
+    ("SVG-based printable template set", 1.10),
+    ("Markdown SOP / playbook bundle", 1.10),
 ]
 
 WEIRD_REFRAMES = {
@@ -99,60 +89,60 @@ WEIRD_REFRAMES = {
         "If You Knew Your Death Date...",
         "The 4,000 Weeks Life Audit",
         "How Many Sundays Do You Have Left With Your Parents?",
-        "The Final Horizon Time Design"
+        "The Final Horizon Time Design",
     ],
     "identity transition": [
         "What Will I Do With 2,000 Empty Mondays?",
         "Post-Retirement Identity & Time Design",
         "Who Am I When the Job Title Stops?",
-        "The Identity Offboarding Protocol"
+        "The Identity Offboarding Protocol",
     ],
     "financial avoidance": [
         "The 'Stop Pretending Everything Is Fine' Money Audit",
         "Financial Anxiety De-escalation Protocol",
         "Quiet Money Dashboard for Non-Finance Brains",
-        "The Anti-Budget Income Allocation Kit"
+        "The Anti-Budget Income Allocation Kit",
     ],
     "time blindness": [
         "Visualizing Your Life in 52-Week Blocks",
         "Where Did the Year Go? Time Leak Audit",
-        "The Season Design Workbook"
+        "The Season Design Workbook",
     ],
     "hidden household risk": [
         "In Case I Go Missing / Unexpected Emergency Vault",
         "The 'If Anything Happens to Me' Family Binder",
-        "The Chaos-Proof Household Operations Manual"
+        "The Chaos-Proof Household Operations Manual",
     ],
     "relationship drift": [
         "The Intimacy & Shared Goal Calibration Protocol",
         "100 Uncomfortable Questions for Long-Term Couples",
-        "Friendship Audit & Time Protection Guide"
-    ]
+        "Friendship Audit & Time Protection Guide",
+    ],
 }
 
 RISK_PATTERNS = [
     {
         "type": "Potential Weakness",
-        "text": "People may find this concept fascinating intellectually but hesitate to spend real money on a digital solution."
+        "text": "People may find this concept fascinating intellectually but hesitate to spend real money on a digital solution.",
     },
     {
         "type": "Demand Risk",
-        "text": "Search intent may be strictly informational (seeking articles/advice) rather than transactional (looking for a practical buying tool)."
+        "text": "Search intent may be strictly informational (seeking articles/advice) rather than transactional (looking for a practical buying tool).",
     },
     {
         "type": "Competition Risk",
-        "text": "Existing free tools (standard Google Calendar/Excel templates) may satisfy the need despite lacking your unique positioning."
+        "text": "Existing free tools (standard Google Calendar/Excel templates) may satisfy the need despite lacking your unique positioning.",
     },
     {
         "type": "Fulfillment Burden",
-        "text": "Customers may expect ongoing personal support or complex customization for what should be a low-friction digital download."
+        "text": "Customers may expect ongoing personal support or complex customization for what should be a low-friction digital download.",
     },
     {
         "type": "Platform Risk",
-        "text": "The underlying platform (e.g., Notion or GoodNotes) may release native updates that make standalone templates redundant."
+        "text": "A native update to a common free tool (spreadsheets, calendar apps) could make a standalone template redundant.",
     },
     {
         "type": "Low Retention / LTV",
-        "text": "This solves a one-time crisis or event; customers have no natural reason to buy upsells or cross-family products."
-    }
+        "text": "This solves a one-time crisis or event; customers have no natural reason to buy upsells or cross-family products.",
+    },
 ]
