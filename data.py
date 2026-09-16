@@ -211,3 +211,39 @@ ACTION_BUCKETS = [
     (55, "🟡 INVESTIGATE"),
     (0, "🔴 TOO COMPETITIVE / LOW INTENT"),
 ]
+
+# ----------------------------------------------------------------------
+# Opportunity Finder: automated candidate generation.
+# Concrete, realistic niches x concrete product terms = plausible real-world
+# search phrases, generated combinatorially (no user typing required).
+# Deliberately excludes books/ebooks, Notion, and Canva per requirements.
+# ----------------------------------------------------------------------
+
+SEED_NICHES = [
+    "wedding", "freelancer", "freelance business", "landlord", "therapist practice",
+    "real estate agent", "HOA", "church", "nonprofit", "personal trainer",
+    "Airbnb host", "daycare", "food truck", "hair salon", "gym owner",
+    "life coach", "virtual assistant", "bookkeeper", "construction contractor",
+    "restaurant owner", "small farm", "wedding planner", "event planner",
+    "photographer", "yoga studio", "dog groomer", "pet sitter", "cleaning business",
+    "handyman", "tutor", "music teacher", "daycare provider", "nail salon",
+    "food blogger", "Etsy seller", "Amazon seller", "consultant", "insurance agent",
+    "property manager", "car detailer", "lawn care business", "moving company",
+    "catering business", "bakery owner", "boutique owner", "nonprofit fundraiser",
+    "homeschool family", "new business owner", "side hustle", "solopreneur",
+]
+
+SEED_PRODUCT_TERMS = [
+    "spreadsheet", "template", "planner", "tracker", "checklist", "calculator",
+    "workbook", "printable", "worksheet", "form", "dashboard", "SOP",
+    "toolkit", "log", "audit", "invoice template", "budget spreadsheet",
+    "schedule template",
+]
+
+# Query text matching any of these gets dropped from candidate generation,
+# even if it slipped in via Google Trends' related-query expansion.
+EXCLUDE_PATTERNS = [
+    r"\bbook\b", r"\bebook\b", r"\be-book\b",
+    r"\bnotion\b",
+    r"\bcanva\b",
+]
